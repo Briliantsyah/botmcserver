@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer')
 
 const config = {
-  host: 'hamstersmp.mcsh.io',
+  host: '191.96.231.22',
   port: 12857,
   username: 'LordHM',
   version: '1.21.11'
