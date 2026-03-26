@@ -4,71 +4,105 @@ const config = {
   host: '191.96.231.22',
   port: 12857,
   username: 'LordHM',
-  password: 'HM123',
   version: '1.21.11'
 }
 
+let bot = null
+let reconnecting = false
+
 function createBot() {
-  const bot = mineflayer.createBot({
+  if (bot) return
+
+  bot = mineflayer.createBot({
     host: config.host,
     port: config.port,
     username: config.username,
     version: config.version
   })
 
+  console.log('[Bot] Connecting...')
+
+  let actionInterval = null
+
   bot.on('spawn', () => {
-    console.log(`[LordHM] Bot spawned!`)
-    
-    // Auto login
-    setTimeout(() => {
-      bot.chat(`/login ${config.password}`)
-    }, 2000)
-  })
+    console.log('[Bot] Spawned!')
 
-  bot.on('message', (message) => {
-    const msg = message.toString()
-    console.log(`[Chat] ${msg}`)
-    
-    // Auto register jika diminta
-    if (msg.includes('register') || msg.includes('Register')) {
-      bot.chat(`/register ${config.password} ${config.password}`)
-    }
-    
-    // Auto login jika diminta
-    if (msg.includes('login') || msg.includes('Login')) {
-      bot.chat(`/login ${config.password}`)
-    }
-  })
+    // Behavior loop (lebih natural)
+    actionInterval = setInterval(() => {
+      if (!bot || !bot.entity) return
 
-  // Anti-AFK: jump setiap 25 detik
-  setInterval(() => {
-    bot.setControlState('jump', true)
-    setTimeout(() => {
-      bot.setControlState('jump', false)
-    }, 500)
-  }, 25000)
+      const action = Math.floor(Math.random() * 4)
 
-  // Anti-AFK: look random setiap 60 detik
-  setInterval(() => {
-    const yaw = Math.random() * Math.PI * 2
-    const pitch = (Math.random() - 0.5) * Math.PI
-    bot.look(yaw, pitch, true)
-  }, 60000)
+      switch (action) {
+        case 0:
+          // Jalan random
+          const directions = ['forward', 'back', 'left', 'right']
+          const dir = directions[Math.floor(Math.random() * directions.length)]
 
-  bot.on('kicked', (reason) => {
-    console.log(`[LordHM] Kicked: ${reason}`)
-    setTimeout(createBot, 5000)
-  })
+          bot.setControlState(dir, true)
 
-  bot.on('error', (err) => {
-    console.log(`[LordHM] Error: ${err}`)
-    setTimeout(createBot, 5000)
+          setTimeout(() => {
+            bot.setControlState(dir, false)
+          }, 2000 + Math.random() * 2000)
+          break
+
+        case 1:
+          // Liat sekitar
+          const yaw = Math.random() * Math.PI * 2
+          const pitch = (Math.random() - 0.5) * Math.PI
+          bot.look(yaw, pitch, true)
+          break
+
+        case 2:
+          // Lompat sekali
+          bot.setControlState('jump', true)
+          setTimeout(() => {
+            bot.setControlState('jump', false)
+          }, 500)
+          break
+
+        case 3:
+          // Diam (biar natural)
+          // no action
+          break
+      }
+    }, 8000) // tiap 8 detik (AMAN & gak spam)
   })
 
   bot.on('end', () => {
-    console.log(`[LordHM] Disconnected, reconnecting in 5s...`)
-    setTimeout(createBot, 5000)
+    console.log('[Bot] Disconnected')
+    cleanup(actionInterval)
+    reconnect()
   })
+
+  bot.on('kicked', (reason) => {
+    console.log('[Bot] Kicked:', reason)
+    cleanup(actionInterval)
+    reconnect(true)
+  })
+
+  bot.on('error', (err) => {
+    console.log('[Bot] Error:', err.message)
+  })
+}
+
+function cleanup(interval) {
+  if (interval) clearInterval(interval)
+  bot = null
+}
+
+function reconnect(isKicked = false) {
+  if (reconnecting) return
+  reconnecting = true
+
+  const delay = isKicked ? 20000 : 10000
+
+  console.log(`[Bot] Reconnecting in ${delay / 1000}s...`)
+
+  setTimeout(() => {
+    reconnecting = false
+    createBot()
+  }, delay)
 }
 
 createBot()
