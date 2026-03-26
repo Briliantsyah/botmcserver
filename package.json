@@ -1,7 +1,7 @@
 {
-  "name": "matchalord-bot",
+  "name": "LordHM-bot",
   "version": "1.0.0",
-  "description": "MatchaLord keepalive bot for MatchaSMP",
+  "description": "LordHM keepalive bot for HamsterSMP",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
