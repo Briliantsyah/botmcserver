@@ -1,11 +1,11 @@
 const mineflayer = require('mineflayer')
 
 const config = {
-  host: 'us.freegamehost.xyz',
-  port: 26770,
-  username: 'MatchaLord',
-  password: 'boba123',
-  version: '1.21.4'
+  host: 'hamstersmp.mcsh.io',
+  port: 12857,
+  username: 'LordHM',
+  password: 'HM123',
+  version: '1.21.11'
 }
 
 function createBot() {
@@ -17,7 +17,7 @@ function createBot() {
   })
 
   bot.on('spawn', () => {
-    console.log(`[MatchaLord] Bot spawned!`)
+    console.log(`[LordHM] Bot spawned!`)
     
     // Auto login
     setTimeout(() => {
@@ -56,17 +56,17 @@ function createBot() {
   }, 60000)
 
   bot.on('kicked', (reason) => {
-    console.log(`[MatchaLord] Kicked: ${reason}`)
+    console.log(`[LordHM] Kicked: ${reason}`)
     setTimeout(createBot, 5000)
   })
 
   bot.on('error', (err) => {
-    console.log(`[MatchaLord] Error: ${err}`)
+    console.log(`[LordHM] Error: ${err}`)
     setTimeout(createBot, 5000)
   })
 
   bot.on('end', () => {
-    console.log(`[MatchaLord] Disconnected, reconnecting in 5s...`)
+    console.log(`[LordHM] Disconnected, reconnecting in 5s...`)
     setTimeout(createBot, 5000)
   })
 }
